@@ -13,10 +13,12 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/send-email', async (req, res) => {
+
   const { to, subject, text } = req.body;
+  const recipients = Array.isArray(to) ? to : [to];
 
   const msg = {
-    to,
+    to: recipients,
     from: process.env.FROM_EMAIL,
     subject,
     text,
