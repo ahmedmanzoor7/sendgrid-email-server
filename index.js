@@ -15,6 +15,11 @@ app.use(express.json());
 app.post('/send-email', async (req, res) => {
 
   const { to, subject, text } = req.body;
+
+  if (!to || !subject || !text) {
+      throw new Error('All Fields Are Required');
+    }
+
   const recipients = Array.isArray(to) ? to : [to];
 
   const msg = {
