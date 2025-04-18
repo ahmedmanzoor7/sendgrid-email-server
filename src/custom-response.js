@@ -5,3 +5,5 @@ function CustomResponse({ data, status, error }) {
     status,
   };
 }
+
+module.exports = { CustomResponse };

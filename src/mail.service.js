@@ -1,30 +1,35 @@
+const sgMail = require("@sendgrid/mail");
+require("dotenv").config({ path: process.cwd() + "/.env" });
 
-require("dotenv").config({ path: "../.env" });
-const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-
-async function sendTemplateMailService({ template, recipients, subject }) {
+async function sendTemplateMailService({ recipient, template_id }) {
   const mailOptions = {
     from: process.env.FROM_EMAIL,
-    to: recipients,
-    subject,
-    html: template,
+    to: recipient,
+    template_id: template_id,
   };
 
-  return  await sgMail.sendMail(mailOptions);
-  
+  try {
+    return await sgMail.send(mailOptions);
+  } catch (error) {
+    console.error("Error while sending template mail: ", error);
+    throw error;
+  }
 }
 
-async function sendMailService({ recipients, subject, text }) {
+async function sendMailService({ recipient, template_id }) {
   const mailOptions = {
     from: process.env.FROM_EMAIL,
-    to: recipients,
-    subject,
-    text,
+    to: recipient,
+    template_id: template_id,
   };
-
-  return  await sgMail.sendMail(mailOptions);
+  try {
+    return await sgMail.send(mailOptions);
+  } catch (error) {
+    console.error("Error while sending simple mail: ", error);
+    throw error;
+  }
 }
 
 module.exports = { sendTemplateMailService, sendMailService };

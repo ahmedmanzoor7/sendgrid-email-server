@@ -1,46 +1,43 @@
 const { sendTemplateMailService, sendMailService } = require("./mail.service");
-const { generateTemplateService } = require("./mailer-template.service");
+const { CustomResponse } = require("./custom-response");
 
-async function sendMailController({ recipients, subject, text }) {
-  if (!recipients || !subject || !text) {
-    return {
+async function sendMailController({ recipient }) {
+  if (!recipient) {
+    return CustomResponse({
       data: null,
-      error: "All fields (to, subject, text) are required.",
+      error: "Recipent is required.",
       status: 400,
-    };
+    });
   }
   try {
-    const recipients = Array.isArray(recipients) ? recipients : [recipients];
-    await sendMailService({ recipients, subject, text });
-    return {
+    await sendMailService({ recipient, template_id: process.env.TEMPLATE_ID });
+    return CustomResponse({
       data: "Email sent successfully",
       error: null,
       status: 200,
-    };
+    });
   } catch (error) {
-    return {
+    return CustomResponse({
       data: null,
       error: error,
       status: 500,
-    };
+    });
   }
 }
 
-async function sendTemplateMailController({ recipients, subject, data }) {
-  if (!recipients || !subject || !data) {
-    return {
+async function sendTemplateMailController({ recipient }) {
+  if (!recipient) {
+    return CustomResponse({
       data: null,
       status: 400,
-      error: "All fields (to, subject, data) are required.",
-    };
+      error: "Recipient is required.",
+    });
   }
 
   try {
-    const recipients = Array.isArray(recipients) ? recipients : [recipients];
-    const info = await sendTemplateMailService({
-      subject,
-      template: await generateTemplateService({ name: "test", data }),
-      recipients,
+    await sendTemplateMailService({
+      recipient,
+      template_id: process.env.TEMPLATE_ID,
     });
 
     return CustomResponse({
